@@ -1,27 +1,11 @@
-const SPREADSHEET_ID = import.meta.env.SPREADSHEET_ID;
-const API_KEY = import.meta.env.API_KEY;
-
-const URL =
-  `https://sheets.googleapis.com/v4/spreadsheets/` +
-  `${SPREADSHEET_ID}/?key=${API_KEY}&includeGridData=true`;
-
-const getSheet = async (): Promise<string[][]> => {
-  const resp = await (await fetch(URL)).json();
-  const data = resp["sheets"][0]["data"][0]["rowData"].map(
-    ({ values }: { values: { formattedValue: string }[] }) => {
-      return values.map(({ formattedValue }) => formattedValue);
-    }
-  );
-  return data;
-};
-
-type Quote = {
-  author: string;
-  contents: string;
-};
+const HOMEURL = import.meta.env.DEV
+  ? "http://localhost:8888"
+  : import.meta.env.SITE;
 
 export const getQuotes = async (): Promise<Quote[]> => {
-  const sheetData = await getSheet();
+  const quotes: Quote[] = await (await fetch(`${HOMEURL}/api/get`)).json();
 
-  return sheetData.map(([author, contents]) => ({ author, contents }));
+  console.log(quotes);
+
+  return quotes;
 };
