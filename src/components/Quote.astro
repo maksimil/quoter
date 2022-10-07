@@ -1,0 +1,8 @@
+---
+const { author, contents } = Astro.props;
+---
+
+<div class="w-100">
+  <div class="text-xl text-left italic font-mono">{contents}</div>
+  <div class="text-xl text-right italic font-light pr-10">- {author}</div>
+</div>

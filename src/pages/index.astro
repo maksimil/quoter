@@ -1,5 +1,9 @@
 ---
+import "virtual:windi.css";
 import { getQuotes } from "@api/quotes";
+import Quote from "@components/Quote.astro";
+
+const quotes = await getQuotes();
 ---
 
 <html lang="en">
@@ -9,5 +13,13 @@ import { getQuotes } from "@api/quotes";
     <meta name="generator" content={Astro.generator} />
     <title>Цетатник</title>
   </head>
-  <body></body>
+  <body>
+    <div class="pl-3 space-y-5 mt-3">
+      {
+        quotes.map((quotes) => (
+          <Quote author={quotes.author} contents={quotes.contents} />
+        ))
+      }
+    </div>
+  </body>
 </html>
