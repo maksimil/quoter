@@ -17,6 +17,6 @@ status = 200
 
 [[redirects]]
 from = "/cli"
-to = "/cli.py"
+to = "/.netlify/functions/cli"
 status = 200
 force = true
