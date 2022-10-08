@@ -10,8 +10,13 @@ command = "npm run dev"
 targetPort = 3000
 autoLaunch = false
 
-
 [[redirects]]
 from = "/api/*"
 to = "/.netlify/functions/:splat"
 status = 200
+
+[[redirects]]
+from = "/cli"
+to = "/cli.py"
+status = 200
+force = true
