@@ -1,4 +1,4 @@
-import { getQuotes } from "./lib/api";
+import { loadApi } from "./lib/api";
 import type { Handler } from "@netlify/functions";
 
 const wrapLine = (line: string, lineLength: number): string => {
@@ -52,7 +52,8 @@ const handler: Handler = async (event, _context) => {
 
   const width = parseInt(widthS);
 
-  const quotes = await getQuotes();
+  const api = await loadApi();
+  const quotes = await api.getQuotes();
 
   let output = separatorLine(width) + "\n";
 

@@ -1,24 +1,46 @@
-import fetch from "node-fetch";
+import { GoogleSpreadsheet } from "google-spreadsheet";
 
-const { SPREADSHEET_ID, API_KEY } = process.env;
+const { SPREADSHEET_ID, SERVICE_ACCOUNT_EMAIL, SERVICE_ACCOUNT_PASS } =
+  process.env;
 
-const URL =
-  `https://sheets.googleapis.com/v4/spreadsheets/` +
-  `${SPREADSHEET_ID}/?key=${API_KEY}&includeGridData=true`;
-
-export const getQuotes = async (): Promise<Quote[]> => {
-  const resp: any = await (await fetch(URL)).json();
-
-  const data: string[][] = resp["sheets"][0]["data"][0]["rowData"].map(
-    ({ values }: { values: { formattedValue: string }[] }) => {
-      return values.map(({ formattedValue }) => formattedValue);
-    }
-  );
-
-  const quotes: Quote[] = data.map(([author, contents]) => ({
-    author,
-    contents,
-  }));
-
-  return quotes;
+export const loadApi = async (): Promise<QuoteApi> => {
+  const api = new QuoteApi();
+  await api.load();
+  return api;
 };
+
+export class QuoteApi {
+  doc: GoogleSpreadsheet;
+
+  constructor() {
+    this.doc = new GoogleSpreadsheet(SPREADSHEET_ID);
+  }
+
+  async load(): Promise<void> {
+    await this.doc.useServiceAccountAuth({
+      client_email: SERVICE_ACCOUNT_EMAIL as string,
+      private_key: (SERVICE_ACCOUNT_PASS as string).replace(/\\n/g, "\n"),
+    });
+
+    await this.doc.loadInfo();
+  }
+
+  async getQuotes(): Promise<Quote[]> {
+    const qsheet = this.doc.sheetsByTitle["quotes"];
+    await qsheet.loadCells();
+
+    let quotes: Quote[] = [];
+
+    for (let rowi = 0; rowi < qsheet.rowCount; rowi++) {
+      const cell = qsheet.getCell(rowi, 0);
+
+      if (cell.value !== null) {
+        quotes.push(JSON.parse(`${cell.value}`));
+      } else {
+        break;
+      }
+    }
+
+    return quotes;
+  }
+}
