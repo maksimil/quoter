@@ -43,4 +43,9 @@ export class QuoteApi {
 
     return quotes;
   }
+
+  async suggestQuotes(quotes: Quote[]): Promise<void> {
+    const ssheet = this.doc.sheetsByTitle["suggested"];
+    await ssheet.addRows(quotes.map((quote) => [JSON.stringify(quote)]));
+  }
 }

@@ -8,7 +8,7 @@ const Quote: Component<{ quote: Quote }> = (props) => {
         {props.quote.contents}
       </div>
       <div class="text-xl text-right italic font-light pr-10">
-        {props.quote.author}
+        {`- ${props.quote.author}`}
       </div>
     </div>
   );
