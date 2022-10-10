@@ -1,6 +1,6 @@
 ---
 import "virtual:windi.css";
-import Quotes from "@components/Quotes";
+import Suggest from "@components/Suggest";
 ---
 
 <html lang="en">
@@ -8,16 +8,12 @@ import Quotes from "@components/Quotes";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>qterr</title>
+    <title>qterr suggest</title>
   </head>
   <body>
     <div class="ml-5 mt-5">
-      <a href="/suggest" class="text-xl font-mono hover:text-gray-500">
-        suggest quote
-      </a>
-      <div class="mt-5">
-        <Quotes client:load />
-      </div>
+      <div class="text-2xl font-mono">Suggest quote</div>
+      <Suggest client:load />
     </div>
   </body>
 </html>

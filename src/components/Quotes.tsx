@@ -15,7 +15,11 @@ const Quote: Component<{ quote: Quote }> = (props) => {
 };
 
 const Quotes: Component<{ quotes: Quote[] }> = (props) => {
-  return <For each={props.quotes}>{(quote) => <Quote quote={quote} />}</For>;
+  return (
+    <div class="space-y-5">
+      <For each={props.quotes}>{(quote) => <Quote quote={quote} />}</For>
+    </div>
+  );
 };
 
 const WrapQuotes: Component = () => {
