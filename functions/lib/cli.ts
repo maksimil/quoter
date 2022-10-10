@@ -30,11 +30,16 @@ const cutLine = (contents: string, lineLength: number): string[] => {
   });
 
   words.forEach((word) => {
-    if (combineWords(lines[lines.length - 1], word).length > lineLength) {
+    if (
+      combineWords(lines[lines.length - 1], word).length > lineLength ||
+      word === "\n"
+    ) {
       lines.push("");
     }
 
-    lines[lines.length - 1] = combineWords(lines[lines.length - 1], word);
+    if (word !== "\n") {
+      lines[lines.length - 1] = combineWords(lines[lines.length - 1], word);
+    }
   });
 
   return lines;

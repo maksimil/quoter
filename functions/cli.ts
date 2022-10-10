@@ -12,9 +12,21 @@ const handler: Handler = async (event, _context) => {
   const width = parseInt(widthS);
 
   const api = await loadApi();
-  const quotes = await api.getQuotes("quotes");
+  const quotes = await Promise.all([
+    api.getQuotes("quotes"),
+    api.getQuotes("suggested"),
+  ]);
 
-  const output = formatQuotes(quotes, width);
+  const qquotes = quotes[0];
+
+  const squotes = quotes[1].map((quote) => {
+    return {
+      author: quote.author,
+      contents: "<Suggested> \n " + quote.contents,
+    };
+  });
+
+  const output = formatQuotes([...qquotes, ...squotes], width);
 
   return {
     statusCode: 200,
