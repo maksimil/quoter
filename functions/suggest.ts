@@ -39,7 +39,7 @@ const handler: Handler = async (event, _context) => {
       });
 
       await webhookClient.send({
-        content: `\`\`\`\n${formatQuotes([quote], 50)}\n\`\`\``,
+        content: `\`\`\`\n${formatQuotes([quote], 30)}\n\`\`\``,
       });
     })(),
   ]);
