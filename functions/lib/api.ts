@@ -25,13 +25,17 @@ export class QuoteApi {
     await this.doc.loadInfo();
   }
 
-  async getQuotes(): Promise<Quote[]> {
-    const qsheet = this.doc.sheetsByTitle["quotes"];
+  async getQuotes(sheet: "quotes" | "suggested"): Promise<Quote[]> {
+    const qsheet = this.doc.sheetsByTitle[sheet];
     await qsheet.loadCells();
 
     let quotes: Quote[] = [];
 
     for (let rowi = 0; rowi < qsheet.rowCount; rowi++) {
+      if (rowi == 0) {
+        continue;
+      }
+
       const cell = qsheet.getCell(rowi, 0);
 
       if (cell.value !== null) {
@@ -43,7 +47,6 @@ export class QuoteApi {
 
     return quotes;
   }
-
   async suggestQuotes(quotes: Quote[]): Promise<void> {
     const ssheet = this.doc.sheetsByTitle["suggested"];
     await ssheet.addRows(quotes.map((quote) => [JSON.stringify(quote)]));

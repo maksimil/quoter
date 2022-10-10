@@ -12,7 +12,7 @@ const handler: Handler = async (event, _context) => {
   const width = parseInt(widthS);
 
   const api = await loadApi();
-  const quotes = await api.getQuotes();
+  const quotes = await api.getQuotes("quotes");
 
   const output = formatQuotes(quotes, width);
 
