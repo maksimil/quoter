@@ -1,7 +1,6 @@
 ---
 import "virtual:windi.css";
 import Quotes from "@components/Quotes";
-import PageLink from "@components/PageLink.astro";
 ---
 
 <html lang="en">
@@ -13,12 +12,7 @@ import PageLink from "@components/PageLink.astro";
   </head>
   <body>
     <div class="pl-5 pt-5 w-full <sm:p-2 mb-20">
-      <PageLink label="suggest quote" href="/suggest" />
-      <PageLink label="clean version" href="/clean" />
-      <PageLink label="github<3" href="https://github.com/maksimil/quoter" />
-      <div class="pt-10">
         <Quotes client:load />
-      </div>
     </div>
   </body>
 </html>
