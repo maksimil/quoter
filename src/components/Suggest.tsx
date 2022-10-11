@@ -6,7 +6,7 @@ const Suggest: Component = () => {
   const [status, setStatus] = createSignal<"idle" | "suggesting">("idle");
 
   return (
-    <div class="mt-5 w-100">
+    <div class="mt-5 w-100 <sm:w-full">
       <textarea
         rows="2"
         class="text-lg font-mono w-full"

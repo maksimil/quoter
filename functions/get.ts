@@ -4,10 +4,10 @@ import type { Handler } from "@netlify/functions";
 const handler: Handler = async (_event, _context) => {
   const api = await loadApi();
 
-  const quoteblocks = await Promise.all([
-    api.getQuotes("quotes"),
-    api.getQuotes("suggested"),
-  ]);
+  const quoteblocks = [
+    await api.getQuotes("quotes"),
+    await api.getQuotes("suggested"),
+  ];
 
   return {
     statusCode: 200,
