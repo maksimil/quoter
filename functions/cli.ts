@@ -1,4 +1,4 @@
-import { loadApi } from "./lib/api";
+import { Api } from "./lib/api";
 import type { Handler } from "@netlify/functions";
 import { formatQuotes } from "./lib/cli";
 
@@ -11,22 +11,17 @@ const handler: Handler = async (event, _context) => {
 
   const width = parseInt(widthS);
 
-  const api = await loadApi();
-  const quotes = await Promise.all([
-    api.getQuotes("quotes"),
-    api.getQuotes("suggested"),
-  ]);
-
-  const qquotes = quotes[0];
-
-  const squotes = quotes[1].map((quote) => {
+  const api = new Api();
+  const quotes: Quote[] = (await api.getQuotes()).map((quote) => {
     return {
       author: quote.author,
-      contents: "<Suggested> \n " + quote.contents,
+      contents: (quote.accept ? "" : "<Suggested> \n ") + quote.contents,
+      accept: quote.accept,
+      timestamp: quote.timestamp,
     };
   });
 
-  const output = formatQuotes([...qquotes, ...squotes], width);
+  const output = formatQuotes(quotes, width);
 
   return {
     statusCode: 200,

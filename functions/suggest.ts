@@ -1,4 +1,4 @@
-import { loadApi } from "./lib/api";
+import { Api } from "./lib/api";
 import { WebhookClient } from "discord.js";
 import type { Handler } from "@netlify/functions";
 import { formatQuotes } from "./lib/cli";
@@ -6,16 +6,16 @@ import { formatQuotes } from "./lib/cli";
 const { DISCORD_WEBHOOK_URL } = process.env;
 
 const handler: Handler = async (event, _context) => {
-  let jsonbody;
+  let quote: { author: string; contents: string };
 
   try {
     if (event.body === null) {
       throw "";
     }
 
-    jsonbody = JSON.parse(event.body as string);
+    quote = JSON.parse(event.body as string);
 
-    if (jsonbody["author"] === null || jsonbody["contents"] === null) {
+    if (quote["author"] === null || quote["contents"] === null) {
       throw "";
     }
   } catch {
@@ -25,12 +25,10 @@ const handler: Handler = async (event, _context) => {
     };
   }
 
-  const quote: Quote = jsonbody;
-
   await Promise.all([
     (async () => {
-      const api = await loadApi();
-      await api.suggestQuotes([quote]);
+      const api = new Api();
+      await api.suggestQuote(quote);
     })(),
 
     (async () => {

@@ -1,9 +1,9 @@
 export const getQuotes = async (): Promise<Quote[]> => {
-  const quotes: { quotes: Quote[]; suggested: Quote[] } = await (
-    await fetch(`/api/get`)
-  ).json();
+  const quotes = ((await (await fetch(`/api/get`)).json()) as Quote[]).filter(
+    (q) => q.accept
+  );
 
   console.log(quotes);
 
-  return quotes.quotes;
+  return quotes;
 };

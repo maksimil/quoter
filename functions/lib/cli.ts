@@ -45,7 +45,10 @@ const cutLine = (contents: string, lineLength: number): string[] => {
   return lines;
 };
 
-export const formatQuotes = (quotes: Quote[], width: number): string => {
+export const formatQuotes = (
+  quotes: { author: string; contents: string }[],
+  width: number
+): string => {
   let output = separatorLine(width) + "\n";
 
   quotes.forEach((quote) => {

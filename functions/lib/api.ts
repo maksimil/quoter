@@ -1,54 +1,44 @@
-import { GoogleSpreadsheet } from "google-spreadsheet";
+import { firestore } from "firebase-admin";
+import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
-const { SPREADSHEET_ID, SERVICE_ACCOUNT_EMAIL, SERVICE_ACCOUNT_PASS } =
-  process.env;
+const { FIREBASE_KEY } = process.env;
 
-export const loadApi = async (): Promise<QuoteApi> => {
-  const api = new QuoteApi();
-  await api.load();
-  return api;
-};
-
-export class QuoteApi {
-  doc: GoogleSpreadsheet;
+export class Api {
+  db: FirebaseFirestore.Firestore;
 
   constructor() {
-    this.doc = new GoogleSpreadsheet(SPREADSHEET_ID);
+    if (getApps().length === 0) {
+      initializeApp({
+        credential: cert(JSON.parse(FIREBASE_KEY as string)),
+      });
+    }
+    this.db = getFirestore();
   }
 
-  async load(): Promise<void> {
-    await this.doc.useServiceAccountAuth({
-      client_email: SERVICE_ACCOUNT_EMAIL as string,
-      private_key: (SERVICE_ACCOUNT_PASS as string).replace(/\\n/g, "\n"),
-    });
-
-    await this.doc.loadInfo();
-  }
-
-  async getQuotes(sheet: "quotes" | "suggested"): Promise<Quote[]> {
-    const qsheet = this.doc.sheetsByTitle[sheet];
-    await qsheet.loadCells();
+  async getQuotes(): Promise<Quote[]> {
+    const snap = await this.db
+      .collection("quotes")
+      .orderBy("timestamp", "asc")
+      .get();
 
     let quotes: Quote[] = [];
 
-    for (let rowi = 0; rowi < qsheet.rowCount; rowi++) {
-      if (rowi == 0) {
-        continue;
-      }
-
-      const cell = qsheet.getCell(rowi, 0);
-
-      if (cell.value !== null) {
-        quotes.push(JSON.parse(`${cell.value}`));
-      } else {
-        break;
-      }
-    }
+    snap.forEach((doc) => {
+      quotes.push(doc.data() as Quote);
+    });
 
     return quotes;
   }
-  async suggestQuotes(quotes: Quote[]): Promise<void> {
-    const ssheet = this.doc.sheetsByTitle["suggested"];
-    await ssheet.addRows(quotes.map((quote) => [JSON.stringify(quote)]));
+
+  async suggestQuote(quote: {
+    author: string;
+    contents: string;
+  }): Promise<void> {
+    await this.db.collection("quotes").add({
+      ...quote,
+      accept: false,
+      timestamp: firestore.FieldValue.serverTimestamp(),
+    });
   }
 }
