@@ -6,7 +6,7 @@ const handler: Handler = async (_event, _context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(await api.getQuotes()),
+    body: JSON.stringify((await api.getQuotes()).map((q) => q.quote)),
   };
 };
 
