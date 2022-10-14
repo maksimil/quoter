@@ -30,8 +30,7 @@ const handler: Handler = async (event, _context) => {
   const webhookClient = new WebhookClient({
     url: DISCORD_WEBHOOK_URL,
   });
-
-  webhookClient.send({
+  await webhookClient.send({
     content:
       `"${quote.contents}" - ${quote.author}\n` +
       `accept: ${URL}/api/accept/${id}`,

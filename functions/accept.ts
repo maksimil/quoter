@@ -1,5 +1,8 @@
 import type { Handler } from "@netlify/functions";
+import { WebhookClient } from "discord.js";
 import { Api } from "./lib/api";
+
+const { DISCORD_WEBHOOK_URL } = process.env as { [name: string]: string };
 
 const PATH_REGEX = /^\/api\/accept\/(.*)$/;
 
@@ -17,6 +20,14 @@ const handler: Handler = async (event, _context) => {
 
   const api = new Api();
   await api.acceptQuote(id);
+  const quote = await api.getQuote(id);
+
+  const webhookClient = new WebhookClient({
+    url: DISCORD_WEBHOOK_URL,
+  });
+  await webhookClient.send({
+    content: "Accepted:\n" + `"${quote.contents}" - ${quote.author}`,
+  });
 
   return {
     statusCode: 200,
