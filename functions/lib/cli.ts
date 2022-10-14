@@ -14,7 +14,8 @@ const combineWords = (line: string, word: string): string => {
   }
 };
 
-const cutLine = (contents: string, lineLength: number): string[] => {
+const cutLine = (rawcontents: string, lineLength: number): string[] => {
+  const contents = rawcontents.replaceAll("\n", " \n ");
   let lines = [""];
 
   let words: string[] = [];
