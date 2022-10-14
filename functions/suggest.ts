@@ -2,7 +2,7 @@ import { Api } from "./lib/api";
 import { WebhookClient } from "discord.js";
 import type { Handler } from "@netlify/functions";
 
-const { DISCORD_WEBHOOK_URL } = process.env;
+const { DISCORD_WEBHOOK_URL, URL } = process.env as { [name: string]: string };
 
 const handler: Handler = async (event, _context) => {
   let quote: { author: string; contents: string };
@@ -24,22 +24,18 @@ const handler: Handler = async (event, _context) => {
     };
   }
 
-  await Promise.all([
-    (async () => {
-      const api = new Api();
-      await api.suggestQuote(quote);
-    })(),
+  const api = new Api();
+  const id = await api.suggestQuote(quote);
 
-    (async () => {
-      const webhookClient = new WebhookClient({
-        url: DISCORD_WEBHOOK_URL as string,
-      });
+  const webhookClient = new WebhookClient({
+    url: DISCORD_WEBHOOK_URL,
+  });
 
-      await webhookClient.send({
-        content: `"${quote.contents}" - ${quote.author}`,
-      });
-    })(),
-  ]);
+  webhookClient.send({
+    content:
+      `"${quote.contents}" - ${quote.author}\n` +
+      `accept: ${URL}/api/accept/${id}`,
+  });
 
   return {
     statusCode: 200,
