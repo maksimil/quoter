@@ -17,7 +17,7 @@ import PageLink from "@components/PageLink.astro";
       <PageLink label="clean version" href="/clean" />
       <PageLink label="github<3" href="https://github.com/maksimil/quoter" />
       <div class="pt-10">
-        <Quotes client:load />
+        <Quotes all={true} client:load />
       </div>
     </div>
   </body>

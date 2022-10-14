@@ -1,7 +1,6 @@
 import { Api } from "./lib/api";
 import { WebhookClient } from "discord.js";
 import type { Handler } from "@netlify/functions";
-import { formatQuotes } from "./lib/cli";
 
 const { DISCORD_WEBHOOK_URL } = process.env;
 
@@ -37,7 +36,7 @@ const handler: Handler = async (event, _context) => {
       });
 
       await webhookClient.send({
-        content: `\`\`\`\n${formatQuotes([quote], 30)}\n\`\`\``,
+        content: `"${quote.contents}" - ${quote.author}`,
       });
     })(),
   ]);

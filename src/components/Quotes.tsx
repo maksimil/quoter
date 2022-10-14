@@ -2,11 +2,14 @@ import { getQuotes } from "@api/quotes";
 import { Component, createResource, For, Match, Switch } from "solid-js";
 
 const Quote: Component<{ quote: Quote }> = (props) => {
+  console.log(props.quote.contents.split("\n"));
   return (
     <div class="w-100 <sm:w-full">
-      <div class="text-xl text-center italic font-mono">
-        {props.quote.contents}
-      </div>
+      <For each={props.quote.contents.split("\n")}>
+        {(line) => (
+          <div class="text-xl text-center italic font-mono">{line}</div>
+        )}
+      </For>
       <div class="text-xl text-right italic pr-5">
         {`- ${props.quote.author}`}
       </div>
@@ -22,8 +25,8 @@ const Quotes: Component<{ quotes: Quote[] }> = (props) => {
   );
 };
 
-const WrapQuotes: Component = () => {
-  const [quotes] = createResource(async () => await getQuotes());
+const WrapQuotes: Component<{ all: boolean }> = (props) => {
+  const [quotes] = createResource(async () => await getQuotes(props.all));
   return (
     <Switch>
       <Match

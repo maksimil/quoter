@@ -6,5 +6,6 @@ declare global {
     contents: string;
     accept: boolean;
     timestamp: firestore.FieldValue;
+    id: string;
   };
 }

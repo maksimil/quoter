@@ -12,12 +12,14 @@ const handler: Handler = async (event, _context) => {
   const width = parseInt(widthS);
 
   const api = new Api();
-  const quotes: Quote[] = (await api.getQuotes()).map(({ quote, id }) => {
+  const quotes: Quote[] = (await api.getQuotes()).map((quote) => {
     return {
       author: quote.author,
-      contents: (quote.accept ? "" : `<Suggested-${id}> \n `) + quote.contents,
+      contents:
+        (quote.accept ? "" : `<Suggested-${quote.id}> \n `) + quote.contents,
       accept: quote.accept,
       timestamp: quote.timestamp,
+      id: quote.id,
     };
   });
 
