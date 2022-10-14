@@ -1,5 +1,14 @@
-import { getQuotes } from "@api/quotes";
-import { Component, createResource, For, Match, Switch } from "solid-js";
+import { getQuotes, getQuotesCache } from "@api/quotes";
+import {
+  batch,
+  Component,
+  createSignal,
+  For,
+  Match,
+  onMount,
+  Switch,
+} from "solid-js";
+import { createStore } from "solid-js/store";
 
 const Quote: Component<{ quote: Quote }> = (props) => {
   console.log(props.quote.contents.split("\n"));
@@ -26,23 +35,36 @@ const Quotes: Component<{ quotes: Quote[] }> = (props) => {
 };
 
 const WrapQuotes: Component<{ all: boolean }> = (props) => {
-  const [quotes] = createResource(async () => await getQuotes(props.all));
+  const [state, setState] = createSignal<"ssg" | "cache" | "loaded">("ssg");
+  const [quotes, setQuotes] = createStore<Quote[]>([]);
+
+  onMount(() => {
+    const qcache = getQuotesCache(props.all);
+
+    batch(() => {
+      setState("cache");
+      setQuotes(qcache);
+    });
+
+    getQuotes(props.all).then((quotes) => {
+      batch(() => {
+        setState("loaded");
+        setQuotes(quotes);
+      });
+    });
+  });
+
   return (
     <Switch>
-      <Match
-        when={
-          quotes.state == "pending" ||
-          quotes.state == "refreshing" ||
-          quotes.state == "unresolved"
-        }
-      >
+      <Match when={state() === "ssg"}>
         <div class="font-mono">...</div>
       </Match>
-      <Match when={quotes.state == "errored"}>
-        <div class="font-mono">{"error >.<!"}</div>
+      <Match when={state() === "cache"}>
+        <Quotes quotes={quotes} />
+        <div class="font-mono">...</div>
       </Match>
-      <Match when={quotes.state == "ready"}>
-        <Quotes quotes={quotes() as Quote[]} />
+      <Match when={state() === "loaded"}>
+        <Quotes quotes={quotes} />
       </Match>
     </Switch>
   );
